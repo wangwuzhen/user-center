@@ -9,6 +9,8 @@ import com.ice.usercenter.model.User;
 import com.ice.usercenter.model.request.UserLoginRequest;
 import com.ice.usercenter.model.request.UserRegisterRequest;
 import com.ice.usercenter.service.UserService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,6 +23,7 @@ import java.util.stream.Collectors;
 import static com.ice.usercenter.constant.UserContant.ADMIN_ROLE;
 import static com.ice.usercenter.constant.UserContant.USER_LOGIN_STATE;
 
+@Api(tags = "用户模块")
 @RestController
 @RequestMapping("/user")
 public class UserController {
@@ -28,6 +31,8 @@ public class UserController {
     @Resource
     private UserService userService;
 
+
+    @ApiOperation(value = "注册接口")
     @PostMapping("/register")
     public BaseResponse<Long>  RegisterUser(@RequestBody UserRegisterRequest registerRequest) {
         String userAccount = registerRequest.getUserAccount();
@@ -42,7 +47,7 @@ public class UserController {
 
 
     }
-
+    @ApiOperation(value = "登录接口")
     @PostMapping("/login")
     public BaseResponse<User> LoginUser(@RequestBody UserLoginRequest loginRequest, HttpServletRequest request) {
         String userAccount = loginRequest.getUserAccount();
@@ -55,7 +60,7 @@ public class UserController {
         return ResultUtils.success(user);
 
     }
-
+    @ApiOperation(value = "退出登录")
     @PostMapping("/outLogin")
     public BaseResponse<Integer> OutUserLogin(HttpServletRequest request) {
         if (request == null) {
@@ -66,7 +71,7 @@ public class UserController {
 
     }
 
-
+    @ApiOperation(value = "用户登录信息")
     @GetMapping("/current")
     public BaseResponse<User> currentUser(HttpServletRequest request) {
         Object userstate = request.getSession().getAttribute(USER_LOGIN_STATE);
@@ -83,7 +88,7 @@ public class UserController {
 
     }
 
-
+    @ApiOperation(value = "所有用户信息查询")
     @GetMapping("/search")
     public BaseResponse<List<User>> searchUsers(String username, HttpServletRequest request) {
 
@@ -104,9 +109,9 @@ public class UserController {
         return ResultUtils.success(collect);
 
     }
-
-    @PostMapping("/delete")
-    public BaseResponse<Boolean> deleteUser(@RequestBody long id, HttpServletRequest request) {
+    @ApiOperation(value = "根据id删除用户信息")
+    @PostMapping("/delete/{id}")
+    public BaseResponse<Boolean> deleteUser(@PathVariable("id") long id, HttpServletRequest request) {
 
         if (!isAdmin(request)) {
             throw new BusinessExecption(ErrorCode.PARAMS_ERROR);
